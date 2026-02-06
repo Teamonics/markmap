@@ -12,33 +12,28 @@
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
     body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-family: ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji',
+        'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
       height: 100vh;
       display: flex;
       flex-direction: column;
-      background: #f5f5f5;
+      background: #fff;
       color: #333;
+      overflow: hidden;
     }
 
     header {
       background: #1a1a2e;
       color: #fff;
-      padding: 12px 24px;
+      padding: 10px 20px;
       display: flex;
       align-items: center;
       justify-content: space-between;
       flex-shrink: 0;
     }
 
-    header h1 {
-      font-size: 1.2rem;
-      font-weight: 600;
-    }
-
-    header p {
-      font-size: 0.85rem;
-      opacity: 0.7;
-    }
+    header h1 { font-size: 1.1rem; font-weight: 600; }
+    header p { font-size: 0.8rem; opacity: 0.6; }
 
     .container {
       display: flex;
@@ -49,17 +44,20 @@
     /* Editor panel */
     .editor-panel {
       width: 40%;
+      min-width: 280px;
       display: flex;
       flex-direction: column;
-      border-right: 2px solid #ddd;
+      border-right: 1px solid #e0e0e0;
       background: #fff;
     }
 
     .panel-header {
-      padding: 8px 16px;
-      background: #e8e8e8;
-      font-size: 0.85rem;
+      padding: 6px 12px;
+      background: #f4f4f5;
+      border-bottom: 1px solid #e0e0e0;
+      font-size: 0.8rem;
       font-weight: 600;
+      color: #555;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -67,22 +65,31 @@
 
     #markdown-input {
       flex: 1;
-      padding: 16px;
+      padding: 12px 16px;
       border: none;
       outline: none;
       resize: none;
-      font-family: "Fira Code", "Cascadia Code", "Consolas", monospace;
-      font-size: 14px;
+      font-family: "SFMono-Regular", "Consolas", "Liberation Mono", "Menlo", monospace;
+      font-size: 13px;
       line-height: 1.6;
       tab-size: 2;
       background: #fafafa;
+      color: #24292e;
     }
 
     /* Mindmap panel */
     .mindmap-panel {
       flex: 1;
       position: relative;
+      display: flex;
+      flex-direction: column;
       background: #fff;
+    }
+
+    .mindmap-wrap {
+      flex: 1;
+      position: relative;
+      min-height: 0;
     }
 
     #mindmap {
@@ -91,33 +98,34 @@
       display: block;
     }
 
-    /* Toolbar gets placed by markmap-toolbar */
+    /* Toolbar positioning */
     .mm-toolbar {
       position: absolute;
-      bottom: 16px;
-      right: 16px;
+      bottom: 12px;
+      right: 12px;
     }
 
-    button.render-btn {
-      padding: 4px 12px;
-      background: #4361ee;
-      color: #fff;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 0.8rem;
+    /* Loading state */
+    .loading-msg {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: #999;
+      font-size: 0.9rem;
     }
 
-    button.render-btn:hover { background: #3a56d4; }
+    .loading-msg.hidden { display: none; }
 
     /* Responsive: stack on small screens */
     @media (max-width: 768px) {
       .container { flex-direction: column; }
       .editor-panel {
         width: 100%;
-        height: 45%;
+        height: 40%;
+        min-width: unset;
         border-right: none;
-        border-bottom: 2px solid #ddd;
+        border-bottom: 1px solid #e0e0e0;
       }
     }
   </style>
@@ -135,8 +143,7 @@
     <!-- Editor -->
     <div class="editor-panel">
       <div class="panel-header">
-        <span>Markdown Editor</span>
-        <button class="render-btn" id="render-btn">Render</button>
+        <span>Markdown</span>
       </div>
       <textarea id="markdown-input" spellcheck="false">
 # Markmap Viewer
@@ -144,13 +151,13 @@
 ## How to Use
 - Paste your markdown here
 - Use headings and lists to create hierarchy
-- Click **Render** or just start typing
+- The mindmap updates as you type
 
 ## Features
 - Real-time preview
 - Interactive mindmap
   - Zoom and pan
-  - Click nodes to collapse
+  - Click nodes to collapse/expand
 - Supports markdown syntax
   - **Bold** and *italic*
   - `inline code`
@@ -175,66 +182,80 @@
     <!-- Mindmap -->
     <div class="mindmap-panel">
       <div class="panel-header">
-        <span>Mindmap Output</span>
+        <span>Mindmap</span>
       </div>
-      <svg id="mindmap"></svg>
+      <div class="mindmap-wrap">
+        <div class="loading-msg" id="loading-msg">Loading markmap...</div>
+        <svg id="mindmap"></svg>
+      </div>
     </div>
   </div>
 
-  <!-- Load markmap dependencies from CDN -->
+  <!-- Load markmap dependencies from CDN (correct paths from package.json jsdelivr fields) -->
   <script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/markmap-lib@0.18/dist/browser/index.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/markmap-view@0.18/dist/browser/index.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/markmap-lib@0.18/dist/browser/index.iife.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/markmap-toolbar@0.18/dist/index.js"></script>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/markmap-toolbar@0.18/dist/style.css" />
 
   <script>
     (function () {
-      const { Transformer } = markmap;
-      // markmap-view exposes as window.markmap as well; we access Markmap from it
-      const { Markmap, deriveOptions } = markmap;
-      const { Toolbar } = markmap;
+      var loadingMsg = document.getElementById('loading-msg');
 
-      const textarea = document.getElementById('markdown-input');
-      const svgEl = document.getElementById('mindmap');
-      const renderBtn = document.getElementById('render-btn');
+      // Verify libraries loaded
+      if (!window.markmap || !window.markmap.Transformer || !window.markmap.Markmap) {
+        loadingMsg.textContent = 'Failed to load markmap libraries. Please refresh.';
+        return;
+      }
+      loadingMsg.classList.add('hidden');
 
-      // Create the transformer (markdown -> tree)
-      const transformer = new Transformer();
+      var Transformer = markmap.Transformer;
+      var Markmap = markmap.Markmap;
+      var deriveOptions = markmap.deriveOptions;
+      var Toolbar = markmap.Toolbar;
+
+      var textarea = document.getElementById('markdown-input');
+      var svgEl = document.getElementById('mindmap');
+
+      // Create the transformer (markdown -> tree data)
+      var transformer = new Transformer();
 
       // Create the markmap instance on the SVG
-      const mm = Markmap.create(svgEl, { duration: 300 });
+      var mm = Markmap.create(svgEl, { duration: 300 });
 
-      // Add the toolbar
+      // Add the toolbar (zoom controls)
       if (Toolbar) {
-        const toolbar = Toolbar.create(mm);
+        var toolbar = Toolbar.create(mm);
         toolbar.el.classList.add('mm-toolbar');
-        document.querySelector('.mindmap-panel').appendChild(toolbar.el);
+        document.querySelector('.mindmap-wrap').appendChild(toolbar.el);
       }
 
-      // Render function
+      // Render function: transform markdown and update the mindmap
       function renderMarkmap() {
-        const md = textarea.value;
-        const { root, features } = transformer.transform(md);
-        const options = deriveOptions(features);
+        var md = textarea.value;
+        var result = transformer.transform(md);
+        var root = result.root;
+        var features = result.features;
+
+        // Load any extra assets needed (e.g. KaTeX for math, highlight.js for code)
+        var keys = Object.keys(features);
+        if (keys.length) {
+          var assets = transformer.getAssets(keys);
+          if (assets.styles) markmap.loadCSS(assets.styles);
+          if (assets.scripts) markmap.loadJS(assets.scripts);
+        }
+
+        var options = deriveOptions(features);
         mm.setData(root, options);
         mm.fit();
       }
 
       // Debounce helper for auto-render while typing
-      let timer;
-      function debounce(fn, delay) {
-        clearTimeout(timer);
-        timer = setTimeout(fn, delay);
-      }
-
-      // Auto-render on typing (with 400ms debounce)
+      var timer;
       textarea.addEventListener('input', function () {
-        debounce(renderMarkmap, 400);
+        clearTimeout(timer);
+        timer = setTimeout(renderMarkmap, 300);
       });
-
-      // Also render on button click
-      renderBtn.addEventListener('click', renderMarkmap);
 
       // Initial render
       renderMarkmap();
