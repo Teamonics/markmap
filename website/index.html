@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Markdown Mindmap Viewer</title>
+  <title>MindBranches</title>
   <!--
     Powered by markmap (https://github.com/markmap/markmap)
     MIT License - Copyright (c) 2020 Gerald
@@ -14,82 +14,99 @@
     body {
       font-family: ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji',
         'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
-      height: 100vh;
-      display: flex;
-      flex-direction: column;
-      background: #fff;
+      min-height: 100vh;
+      background: #f0f0f3;
       color: #333;
-      overflow: hidden;
+      overflow-y: auto;
     }
 
     header {
       background: #1a1a2e;
       color: #fff;
-      padding: 10px 20px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
+      padding: 14px 24px;
       flex-shrink: 0;
     }
 
-    header h1 { font-size: 1.1rem; font-weight: 600; }
-    header p { font-size: 0.8rem; opacity: 0.6; }
+    header h1 { font-size: 1.3rem; font-weight: 700; letter-spacing: -0.02em; }
+    header p { font-size: 0.8rem; opacity: 0.55; margin-top: 2px; }
 
-    .container {
-      display: flex;
-      flex: 1;
-      min-height: 0;
-    }
-
-    /* Editor panel */
-    .editor-panel {
-      width: 40%;
-      min-width: 280px;
+    .page-wrap {
+      padding: 16px;
       display: flex;
       flex-direction: column;
-      border-right: 1px solid #e0e0e0;
+      gap: 16px;
+    }
+
+    /* Editor card */
+    .card {
       background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
     }
 
     .panel-header {
-      padding: 6px 12px;
+      padding: 8px 14px;
       background: #f4f4f5;
-      border-bottom: 1px solid #e0e0e0;
+      border-bottom: 1px solid #e4e4e7;
       font-size: 0.8rem;
       font-weight: 600;
       color: #555;
       display: flex;
       justify-content: space-between;
       align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
     }
 
+    .panel-header-actions {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .action-btn {
+      padding: 4px 10px;
+      background: #e4e4e7;
+      color: #333;
+      border: 1px solid #d4d4d8;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 0.75rem;
+      font-weight: 500;
+      white-space: nowrap;
+      transition: background 0.15s;
+    }
+
+    .action-btn:hover { background: #d4d4d8; }
+    .action-btn.active { background: #4361ee; color: #fff; border-color: #4361ee; }
+
     #markdown-input {
-      flex: 1;
-      padding: 12px 16px;
+      padding: 14px 16px;
       border: none;
       outline: none;
-      resize: none;
+      resize: vertical;
       font-family: "SFMono-Regular", "Consolas", "Liberation Mono", "Menlo", monospace;
       font-size: 13px;
       line-height: 1.6;
       tab-size: 2;
       background: #fafafa;
       color: #24292e;
+      min-height: 200px;
     }
 
-    /* Mindmap panel */
-    .mindmap-panel {
-      flex: 1;
+    /* Mindmap card */
+    .mindmap-card {
       position: relative;
-      display: flex;
-      flex-direction: column;
-      background: #fff;
+      min-height: 500px;
     }
 
     .mindmap-wrap {
-      flex: 1;
       position: relative;
-      min-height: 0;
+      height: 500px;
     }
 
     #mindmap {
@@ -117,36 +134,69 @@
 
     .loading-msg.hidden { display: none; }
 
-    /* Responsive: stack on small screens */
-    @media (max-width: 768px) {
-      .container { flex-direction: column; }
-      .editor-panel {
-        width: 100%;
-        height: 40%;
-        min-width: unset;
-        border-right: none;
-        border-bottom: 1px solid #e0e0e0;
+    /* Desktop: side-by-side */
+    @media (min-width: 900px) {
+      .page-wrap {
+        flex-direction: row;
+        padding: 20px;
+        gap: 20px;
+        height: calc(100vh - 56px);
       }
+
+      .card.editor-card {
+        width: 40%;
+        min-width: 320px;
+      }
+
+      .card.mindmap-card {
+        flex: 1;
+      }
+
+      .page-wrap {
+        overflow: hidden;
+      }
+
+      #markdown-input {
+        flex: 1;
+        resize: none;
+      }
+
+      .mindmap-wrap {
+        flex: 1;
+        height: auto;
+      }
+
+      .card {
+        overflow: hidden;
+      }
+    }
+
+    /* Mobile: stacked */
+    @media (max-width: 899px) {
+      .page-wrap { padding: 12px; gap: 12px; }
+      #markdown-input { min-height: 250px; }
+      .mindmap-wrap { height: 400px; }
     }
   </style>
 </head>
 <body>
 
   <header>
-    <div>
-      <h1>Markdown Mindmap Viewer</h1>
-      <p>Paste markdown on the left, see your mindmap on the right</p>
-    </div>
+    <h1>MindBranches</h1>
+    <p>Paste markdown, see your mindmap</p>
   </header>
 
-  <div class="container">
-    <!-- Editor -->
-    <div class="editor-panel">
+  <div class="page-wrap">
+    <!-- Editor card -->
+    <div class="card editor-card">
       <div class="panel-header">
         <span>Markdown</span>
+        <div class="panel-header-actions">
+          <button class="action-btn" id="wrap-btn" title="Toggle maxWidth: 300 frontmatter to wrap long text">Wrap Text</button>
+        </div>
       </div>
       <textarea id="markdown-input" spellcheck="false">
-# Markmap Viewer
+# MindBranches
 
 ## How to Use
 - Paste your markdown here
@@ -179,10 +229,16 @@
 </textarea>
     </div>
 
-    <!-- Mindmap -->
-    <div class="mindmap-panel">
+    <!-- Mindmap card -->
+    <div class="card mindmap-card">
       <div class="panel-header">
         <span>Mindmap</span>
+        <div class="panel-header-actions">
+          <button class="action-btn" id="fit-btn" title="Fit to view">Fit</button>
+          <button class="action-btn" id="zoom-in-btn" title="Zoom in">+</button>
+          <button class="action-btn" id="zoom-out-btn" title="Zoom out">&minus;</button>
+          <button class="action-btn" id="download-btn" title="Download as SVG">Download SVG</button>
+        </div>
       </div>
       <div class="mindmap-wrap">
         <div class="loading-msg" id="loading-msg">Loading markmap...</div>
@@ -191,11 +247,10 @@
     </div>
   </div>
 
-  <!-- Load markmap dependencies from CDN (correct paths from package.json jsdelivr fields) -->
+  <!-- Load markmap dependencies from CDN -->
   <script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/markmap-view@0.18/dist/browser/index.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/markmap-lib@0.18/dist/browser/index.iife.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/markmap-toolbar@0.18/dist/index.js"></script>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/markmap-toolbar@0.18/dist/style.css" />
 
   <script>
@@ -212,7 +267,6 @@
       var Transformer = markmap.Transformer;
       var Markmap = markmap.Markmap;
       var deriveOptions = markmap.deriveOptions;
-      var Toolbar = markmap.Toolbar;
 
       var textarea = document.getElementById('markdown-input');
       var svgEl = document.getElementById('mindmap');
@@ -220,37 +274,125 @@
       // Create the transformer (markdown -> tree data)
       var transformer = new Transformer();
 
-      // Create the markmap instance on the SVG
+      // Create the markmap instance
       var mm = Markmap.create(svgEl, { duration: 300 });
 
-      // Add the toolbar (zoom controls)
-      if (Toolbar) {
-        var toolbar = Toolbar.create(mm);
-        toolbar.el.classList.add('mm-toolbar');
-        document.querySelector('.mindmap-wrap').appendChild(toolbar.el);
+      // --- Toolbar buttons ---
+      document.getElementById('fit-btn').addEventListener('click', function () {
+        mm.fit();
+      });
+      document.getElementById('zoom-in-btn').addEventListener('click', function () {
+        mm.rescale(1.25);
+      });
+      document.getElementById('zoom-out-btn').addEventListener('click', function () {
+        mm.rescale(0.8);
+      });
+
+      // --- Download SVG ---
+      document.getElementById('download-btn').addEventListener('click', function () {
+        var svgNode = svgEl.cloneNode(true);
+        // Include markmap's global CSS so the downloaded file looks right
+        var globalCSS = markmap.globalCSS || '';
+        if (globalCSS) {
+          var styleEl = document.createElementNS('http://www.w3.org/2000/svg', 'style');
+          styleEl.textContent = globalCSS;
+          svgNode.insertBefore(styleEl, svgNode.firstChild);
+        }
+        svgNode.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+        var blob = new Blob([new XMLSerializer().serializeToString(svgNode)], { type: 'image/svg+xml' });
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement('a');
+        a.href = url;
+        a.download = 'mindbranches.svg';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      });
+
+      // --- Wrap Text button (toggle maxWidth frontmatter) ---
+      var wrapBtn = document.getElementById('wrap-btn');
+      var wrapActive = false;
+
+      // Check if frontmatter already has maxWidth
+      function hasMaxWidth(text) {
+        var match = text.match(/^---\r?\n([\s\S]*?)\r?\n---/);
+        if (!match) return false;
+        return /maxWidth\s*:/.test(match[1]);
       }
 
-      // Render function: transform markdown and update the mindmap
+      function updateWrapState() {
+        wrapActive = hasMaxWidth(textarea.value);
+        wrapBtn.classList.toggle('active', wrapActive);
+      }
+
+      wrapBtn.addEventListener('click', function () {
+        var text = textarea.value;
+        var fmRegex = /^---\r?\n([\s\S]*?)\r?\n---\r?\n?/;
+        var fmMatch = text.match(fmRegex);
+
+        if (wrapActive) {
+          // Remove maxWidth from existing frontmatter
+          if (fmMatch) {
+            var body = fmMatch[1];
+            // Remove the maxWidth line
+            body = body.replace(/^\s*maxWidth\s*:\s*\d+\s*$/m, '').trim();
+            // Remove the markmap: key if it's now empty
+            body = body.replace(/^\s*markmap:\s*\n?\s*$/m, '').trim();
+            if (body) {
+              textarea.value = '---\n' + body + '\n---\n' + text.slice(fmMatch[0].length);
+            } else {
+              textarea.value = text.slice(fmMatch[0].length);
+            }
+          }
+        } else {
+          // Add maxWidth frontmatter
+          if (fmMatch) {
+            var body = fmMatch[1];
+            if (/markmap\s*:/.test(body)) {
+              // Add maxWidth under existing markmap: key
+              body = body.replace(/(markmap\s*:)/, '$1\n  maxWidth: 300');
+            } else {
+              body = body + '\nmarkmap:\n  maxWidth: 300';
+            }
+            textarea.value = '---\n' + body + '\n---\n' + text.slice(fmMatch[0].length);
+          } else {
+            textarea.value = '---\nmarkmap:\n  maxWidth: 300\n---\n' + text;
+          }
+        }
+
+        updateWrapState();
+        renderMarkmap();
+      });
+
+      // --- Render function ---
+      var enabledFeatures = {};
+
       function renderMarkmap() {
         var md = textarea.value;
         var result = transformer.transform(md);
         var root = result.root;
-        var features = result.features;
+        var frontmatter = result.frontmatter;
 
-        // Load any extra assets needed (e.g. KaTeX for math, highlight.js for code)
-        var keys = Object.keys(features);
+        // Load extra assets for features (code highlighting, math, etc.)
+        var keys = Object.keys(result.features).filter(function (k) { return !enabledFeatures[k]; });
         if (keys.length) {
+          keys.forEach(function (k) { enabledFeatures[k] = true; });
           var assets = transformer.getAssets(keys);
           if (assets.styles) markmap.loadCSS(assets.styles);
           if (assets.scripts) markmap.loadJS(assets.scripts);
         }
 
-        var options = deriveOptions(features);
+        // Apply frontmatter markmap options (like maxWidth)
+        var markmapOptions = frontmatter && frontmatter.markmap ? frontmatter.markmap : undefined;
+        var options = deriveOptions(markmapOptions);
         mm.setData(root, options);
         mm.fit();
+
+        updateWrapState();
       }
 
-      // Debounce helper for auto-render while typing
+      // Debounce auto-render while typing
       var timer;
       textarea.addEventListener('input', function () {
         clearTimeout(timer);
