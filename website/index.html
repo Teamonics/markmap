@@ -8,6 +8,19 @@
     Powered by markmap (https://github.com/markmap/markmap)
     MIT License - Copyright (c) 2020 Gerald
   -->
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="logo.svg" />
+  <!-- Open Graph meta tags for link previews -->
+  <meta property="og:title" content="MindBranches" />
+  <meta property="og:description" content="Paste a markdown summary to create interactive MindBranches. Use any LLM to summarize books, documents, or text, then visualize it as a mindmap." />
+  <meta property="og:image" content="https://teamonics.github.io/mindbranches/logo.svg" />
+  <meta property="og:url" content="https://teamonics.github.io/mindbranches/" />
+  <meta property="og:type" content="website" />
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:site" content="@MindBranches" />
+  <meta name="twitter:title" content="MindBranches" />
+  <meta name="twitter:description" content="Paste a markdown summary to create interactive MindBranches. Use any LLM to summarize books, documents, or text, then visualize it as a mindmap." />
+  <meta name="twitter:image" content="https://teamonics.github.io/mindbranches/logo.svg" />
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -23,10 +36,14 @@
     header {
       background: #1a1a2e;
       color: #fff;
-      padding: 14px 24px;
+      padding: 10px 24px;
       flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      gap: 14px;
     }
 
+    .header-logo { width: 36px; height: 36px; border-radius: 50%; flex-shrink: 0; }
     header h1 { font-size: 1.3rem; font-weight: 700; letter-spacing: -0.02em; }
     header p { font-size: 0.8rem; opacity: 0.55; margin-top: 2px; }
 
@@ -83,6 +100,8 @@
 
     .action-btn:hover { background: #d4d4d8; }
     .action-btn.active { background: #4361ee; color: #fff; border-color: #4361ee; }
+    .action-btn.danger { background: #fee2e2; color: #dc2626; border-color: #fca5a5; }
+    .action-btn.danger:hover { background: #fca5a5; }
 
     #markdown-input {
       padding: 14px 16px;
@@ -191,7 +210,9 @@
     }
 
     .follow-btn {
-      display: inline-block;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
       padding: 6px 16px;
       background: #000;
       color: #fff;
@@ -203,13 +224,17 @@
     }
 
     .follow-btn:hover { background: #333; }
+    .follow-btn svg { width: 14px; height: 14px; fill: #fff; }
   </style>
 </head>
 <body>
 
   <header>
-    <h1>MindBranches</h1>
-    <p>Paste a markdown summary to create MindBranches</p>
+    <img src="logo.svg" alt="MindBranches logo" class="header-logo" />
+    <div>
+      <h1>MindBranches</h1>
+      <p>Paste a markdown summary to create MindBranches</p>
+    </div>
   </header>
 
   <div class="page-wrap">
@@ -219,7 +244,7 @@
         <span>Markdown</span>
         <div class="panel-header-actions">
           <button class="action-btn" id="wrap-btn" title="Toggle maxWidth: 300 frontmatter to wrap long text">Wrap Text</button>
-          <button class="action-btn" id="clear-btn" title="Clear all markdown text">Clear</button>
+          <button class="action-btn danger" id="clear-btn" title="Clear all markdown text">Clear</button>
         </div>
       </div>
       <textarea id="markdown-input" spellcheck="false">
@@ -280,7 +305,7 @@
   </div>
 
   <footer>
-    <a class="follow-btn" href="https://www.x.com/MindBranches" target="_blank" rel="noopener">Follow @MindBranches on X</a>
+    <a class="follow-btn" href="https://www.x.com/MindBranches" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg> Follow @MindBranches on X</a>
     <span>&copy; 2026 Teamonics LLC. All rights reserved.</span>
   </footer>
 
