@@ -183,7 +183,7 @@
 
   <header>
     <h1>MindBranches</h1>
-    <p>Paste markdown, see your mindmap</p>
+    <p>Paste markdown, see your MindBranch</p>
   </header>
 
   <div class="page-wrap">
@@ -193,46 +193,48 @@
         <span>Markdown</span>
         <div class="panel-header-actions">
           <button class="action-btn" id="wrap-btn" title="Toggle maxWidth: 300 frontmatter to wrap long text">Wrap Text</button>
+          <button class="action-btn" id="clear-btn" title="Clear all markdown text">Clear</button>
         </div>
       </div>
       <textarea id="markdown-input" spellcheck="false">
-# MindBranches
+# MindBranches Guide
 
-## How to Use
-- Paste your markdown here
-- Use headings and lists to create hierarchy
-- The mindmap updates as you type
+## Step 1: Pick Your Source
+- **Any book** you want summarized
+- **A document** like a report, article, or paper
+- **Pasted text** from a webpage, PDF, or notes
 
-## Features
-- Real-time preview
-- Interactive mindmap
-  - Zoom and pan
-  - Click nodes to collapse/expand
-- Supports markdown syntax
-  - **Bold** and *italic*
-  - `inline code`
-  - [Links](https://markmap.js.org)
+## Step 2: Open Any LLM
+- **Claude** at claude.ai
+- **ChatGPT** at chatgpt.com
+- **Gemini** at gemini.google.com
 
-## Example Topics
-### Project Planning
-- Goals
-- Timeline
-- Resources
+## Step 3: Copy and Paste This Prompt
+- Send the following prompt along with your source material:
+  - Output final summary as markdown code using #, ## or - before each list element and title it "Summary of Title by Author".  Bold titles and subtitles. Output as markdown code. Do not use letters or numbers in front of list elements. Output as code only.
 
-### Study Notes
-- Chapter 1
-  - Key concepts
-  - Summary
-- Chapter 2
-  - Key concepts
-  - Summary
+## Step 4: Copy the LLM Output
+- The LLM will return formatted markdown
+- **Select all** of the markdown code output
+- **Copy** it to your clipboard
+
+## Step 5: Paste It Here
+- Click **Clear** above to empty this text box
+- **Paste** the copied markdown into this section
+- Your MindBranch will render automatically on the right
+
+## Tools Available
+- **Wrap Text** limits node width for long text
+- **Fit** centers and fits the MindBranch to view
+- **+** and **-** zoom in and out
+- **Download SVG** saves your MindBranch as an image file
 </textarea>
     </div>
 
     <!-- Mindmap card -->
     <div class="card mindmap-card">
       <div class="panel-header">
-        <span>Mindmap</span>
+        <span>MindBranch</span>
         <div class="panel-header-actions">
           <button class="action-btn" id="fit-btn" title="Fit to view">Fit</button>
           <button class="action-btn" id="zoom-in-btn" title="Zoom in">+</button>
@@ -241,7 +243,7 @@
         </div>
       </div>
       <div class="mindmap-wrap">
-        <div class="loading-msg" id="loading-msg">Loading markmap...</div>
+        <div class="loading-msg" id="loading-msg">Loading MindBranches...</div>
         <svg id="mindmap"></svg>
       </div>
     </div>
@@ -259,7 +261,7 @@
 
       // Verify libraries loaded
       if (!window.markmap || !window.markmap.Transformer || !window.markmap.Markmap) {
-        loadingMsg.textContent = 'Failed to load markmap libraries. Please refresh.';
+        loadingMsg.textContent = 'Failed to load MindBranches. Please refresh.';
         return;
       }
       loadingMsg.classList.add('hidden');
@@ -308,6 +310,12 @@
         a.click();
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
+      });
+
+      // --- Clear button ---
+      document.getElementById('clear-btn').addEventListener('click', function () {
+        textarea.value = '';
+        renderMarkmap();
       });
 
       // --- Wrap Text button (toggle maxWidth frontmatter) ---
