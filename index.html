@@ -177,6 +177,32 @@
       #markdown-input { min-height: 250px; }
       .mindmap-wrap { height: 400px; }
     }
+
+    /* Footer */
+    footer {
+      padding: 14px 20px;
+      text-align: center;
+      font-size: 0.75rem;
+      color: #888;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .follow-btn {
+      display: inline-block;
+      padding: 6px 16px;
+      background: #000;
+      color: #fff;
+      border-radius: 20px;
+      text-decoration: none;
+      font-size: 0.8rem;
+      font-weight: 600;
+      transition: background 0.15s;
+    }
+
+    .follow-btn:hover { background: #333; }
   </style>
 </head>
 <body>
@@ -252,6 +278,11 @@
       </div>
     </div>
   </div>
+
+  <footer>
+    <a class="follow-btn" href="https://www.x.com/MindBranches" target="_blank" rel="noopener">Follow @MindBranches on X</a>
+    <span>&copy; 2026 Teamonics LLC. All rights reserved.</span>
+  </footer>
 
   <!-- Load markmap dependencies from CDN -->
   <script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
